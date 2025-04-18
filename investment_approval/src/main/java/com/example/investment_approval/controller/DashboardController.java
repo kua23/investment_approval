@@ -6,6 +6,8 @@ import com.example.investment_approval.repository.InvestmentRequestRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.Authentication;
+
 
 import java.util.List;
 
@@ -27,7 +29,8 @@ public class DashboardController {
     }
 
     @GetMapping("/status-summary")
-    public List<StatusCountDTO> getStatusSummary() {
+    public List<StatusCountDTO> getStatusSummary(Authentication authentication) {
+        System.out.println("User accessing dashboard: " + authentication.getName());
         return requestRepository.getStatusCounts();
     }
 }

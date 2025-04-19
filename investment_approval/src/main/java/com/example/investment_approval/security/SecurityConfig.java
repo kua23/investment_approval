@@ -63,10 +63,18 @@ public class SecurityConfig {
                 .anyRequest().permitAll()
             )
             .formLogin(login -> login
-                .loginProcessingUrl("/login")
-                 // ✅ Accept form POST to /login
-                .permitAll()
-            )
+    .loginProcessingUrl("/login")
+    .successHandler((request, response, authentication) -> {
+        response.setStatus(200); // Prevents redirect on success
+    })
+    .failureHandler((request, response, exception) -> {
+        response.setStatus(401); // Sends 401 instead of redirect
+        response.setContentType("application/json");
+        response.getWriter().write("{\"message\": \"Invalid credentials\"}");
+    })
+    .permitAll()
+)
+
             .logout(logout -> logout
                 .logoutUrl("/logout")
                 .logoutSuccessUrl("/")

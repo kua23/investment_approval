@@ -92,6 +92,13 @@ public class EmployeeController {
 public Employee getCurrentEmployee(Authentication auth) {
     return employeeRepository.findByUserUsername(auth.getName());
 }
-
+@PutMapping("/{id}/availability")
+public Employee updateAvailability(@PathVariable Long id, @RequestBody Map<String, Boolean> payload) {
+    Employee employee = employeeRepository.findById(id)
+        .orElseThrow(() -> new RuntimeException("Employee not found"));
+    
+    employee.setAvailable(payload.get("available"));
+    return employeeRepository.save(employee);
+}
 
 }

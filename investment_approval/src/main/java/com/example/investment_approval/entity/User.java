@@ -3,7 +3,6 @@ package com.example.investment_approval.entity;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "users")
 public class User {
 
     @Id
@@ -19,6 +18,17 @@ public class User {
         this.password = password;
         this.role = role;
     }
+    @OneToOne
+@JoinColumn(name = "employee_id")
+private Employee employee;
+
+public Employee getEmployee() {
+    return employee;
+}
+
+public void setEmployee(Employee employee) {
+    this.employee = employee;
+}
 
     public String getUsername() { return username; }
     public void setUsername(String username) { this.username = username; }

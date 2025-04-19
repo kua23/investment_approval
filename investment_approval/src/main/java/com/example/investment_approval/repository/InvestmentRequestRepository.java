@@ -15,4 +15,9 @@ public interface InvestmentRequestRepository extends JpaRepository<InvestmentReq
 
     @Query("SELECT r.status as status, COUNT(r) as count FROM InvestmentRequest r GROUP BY r.status")
     List<StatusCountDTO> getStatusCounts();
+
+    List<InvestmentRequest> findByAssignedToEmployeeId(Long employeeId);
+    List<InvestmentRequest> findBySubmittedByEmployeeId(Long employeeId);
+    List<InvestmentRequest> findByStatus(String status);
+
 }

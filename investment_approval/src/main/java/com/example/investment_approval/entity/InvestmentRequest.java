@@ -17,6 +17,8 @@ public class InvestmentRequest {
     private String status; // PENDING, APPROVED, REJECTED
     private LocalDateTime submittedAt;
 
+    
+
     @ManyToOne
     @JoinColumn(name = "employee_id")
     private Employee submittedBy;
@@ -121,6 +123,11 @@ public class InvestmentRequest {
     public void setComments(String comments) {
         this.comments = comments;
     }
-
+    @PrePersist
+    public void prePersist() {
+        if (submittedAt == null) {
+            submittedAt = LocalDateTime.now();
+        }
+    }
     
 }

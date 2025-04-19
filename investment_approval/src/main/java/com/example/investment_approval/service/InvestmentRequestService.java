@@ -21,7 +21,9 @@ public class InvestmentRequestService {
 
     @Autowired
     private AuditLogService auditLogService;
-
+    public enum RequestStatus {
+        PENDING, APPROVED, REJECTED
+    }
     public InvestmentRequest submitRequest(Long submittedById, InvestmentRequest request) {
         Employee submitter = employeeRepository.findById(submittedById)
                 .orElseThrow(() -> new RuntimeException("Employee not found"));
@@ -31,7 +33,7 @@ public class InvestmentRequestService {
 
         request.setSubmittedBy(submitter);
         request.setAssignedTo(approver);
-        request.setStatus("PENDING");
+        request.setStatus(RequestStatus.PENDING.name());
         request.setSubmittedAt(LocalDateTime.now());
 
         InvestmentRequest savedRequest = requestRepository.save(request);
@@ -41,7 +43,7 @@ public class InvestmentRequestService {
 
         return savedRequest;
     }
-
+    
     private Employee findAvailableManager(Employee employee) {
         Employee manager = employee.getManager();
         while (manager != null) {
@@ -63,6 +65,23 @@ public class InvestmentRequestService {
 
         Employee approver = employeeRepository.findById(approverId)
                 .orElseThrow(() -> new RuntimeException("Approver not found"));
+
+                if (!approver.equals(request.getAssignedTo())) {
+                    // Approver is not the one assigned
+                    throw new RuntimeException("You are not assigned to approve this request.");
+                }
+                
+                if (!approver.isAvailable()) {
+                    // Try to reassign to next available manager
+                    Employee next = findAvailableManager(approver);
+                    if (next == null) {
+                        throw new RuntimeException("No available higher manager for escalation.");
+                    }
+                    request.setAssignedTo(next);
+                    requestRepository.save(request);
+                    auditLogService.log("ESCALATED", approver, request);
+                    throw new RuntimeException("Approver unavailable. Request escalated to next manager.");
+                }
 
         request.setStatus(status.toUpperCase());
         request.setComments(comments);

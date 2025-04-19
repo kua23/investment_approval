@@ -5,18 +5,18 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 public class SecurityConfig {
@@ -24,6 +24,30 @@ public class SecurityConfig {
     @Autowired
     private CustomUserDetailsService userDetailsService;
 
+    // ✅ Define the Password Encoder
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    // ✅ Configure the Authentication Provider with your CustomUserDetailsService
+    @Bean
+    public DaoAuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+        authProvider.setUserDetailsService(userDetailsService);
+        authProvider.setPasswordEncoder(passwordEncoder());
+        return authProvider;
+    }
+
+    // ✅ Configure AuthenticationManager with the provider
+    @Bean
+    public AuthenticationManager authManager(HttpSecurity http) throws Exception {
+        return http.getSharedObject(AuthenticationManagerBuilder.class)
+            .authenticationProvider(authenticationProvider())
+            .build();
+    }
+
+    // ✅ Configure the Security Filter Chain
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -39,6 +63,8 @@ public class SecurityConfig {
                 .anyRequest().permitAll()
             )
             .formLogin(login -> login
+                .loginProcessingUrl("/login")
+                 // ✅ Accept form POST to /login
                 .permitAll()
             )
             .logout(logout -> logout
@@ -49,28 +75,17 @@ public class SecurityConfig {
         return http.build();
     }
 
-    @Bean
-public AuthenticationManager authManager(AuthenticationConfiguration config) throws Exception {
-    return config.getAuthenticationManager();
-}
-
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
+    // ✅ Allow CORS requests from React
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(List.of("http://localhost:5173"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        config.setAllowCredentials( true);
         config.setAllowedHeaders(List.of("*"));
+        config.setAllowCredentials(true); // ✅ Required for cookies/session auth
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return source;
     }
 }
-

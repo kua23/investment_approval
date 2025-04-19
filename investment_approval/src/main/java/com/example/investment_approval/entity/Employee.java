@@ -1,5 +1,7 @@
 package com.example.investment_approval.entity;
 
+import java.util.List;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -22,10 +24,14 @@ public class Employee {
     @JoinColumn(name = "manager_id")
     private Employee manager;
 
+    @OneToMany(mappedBy = "manager")
+    private List<Employee> subordinates;
     public Long getEmployeeId() {
         return employeeId;
     }
-
+    @OneToOne
+    @JoinColumn(name = "username", referencedColumnName = "username")
+    private User user;
     public void setEmployeeId(Long employeeId) {
         this.employeeId = employeeId;
     }
@@ -78,5 +84,20 @@ public class Employee {
         this.manager = manager;
     }
 
+    public List<Employee> getSubordinates() {
+        return subordinates;
+    }
+
+    public void setSubordinates(List<Employee> subordinates) {
+        this.subordinates = subordinates;
+    }
+
     
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
 }

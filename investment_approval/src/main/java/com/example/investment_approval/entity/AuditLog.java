@@ -39,4 +39,12 @@ public class AuditLog {
 
     public InvestmentRequest getRequest() { return request; }
     public void setRequest(InvestmentRequest request) { this.request = request; }
+
+    @PrePersist
+    public void prePersist() {
+        if (timestamp == null) {
+            timestamp = LocalDateTime.now();
+        }
+    }
+
 }

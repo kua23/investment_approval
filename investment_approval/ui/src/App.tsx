@@ -5,6 +5,7 @@ import SubmitRequest from "./pages/SubmitRequest.tsx";
 import RequestsTable from "./pages/RequestsTable.tsx";
 import AuditLog from "./pages/AuditLog.tsx";
 import Navbar from "./components/Navbar.tsx";
+import Register from "./pages/Register.tsx"; 
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         <Route path="/submit" element={<SubmitRequest />} />
         <Route path="/requests" element={<RequestsTable />} />
         <Route path="/audit" element={<AuditLog />} />
+        <Route path="/register" element={<Register />} />
       </Routes>
     </div>
   );

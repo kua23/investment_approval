@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router"; // ✅ Use react-router-dom
+import { useNavigate } from "react-router";
 
 const Login = () => {
   const [username, setUsername] = useState("");
@@ -21,7 +21,7 @@ const Login = () => {
           username,
           password,
         }),
-        credentials: "include", // ✅ important: includes JSESSIONID cookie
+        credentials: "include",
       });
 
       if (response.ok) {
@@ -41,7 +41,9 @@ const Login = () => {
         className="bg-white p-6 rounded shadow-md w-full max-w-sm"
       >
         <h2 className="text-2xl font-bold mb-4">Login</h2>
+
         {error && <div className="text-red-500 mb-2">{error}</div>}
+
         <input
           type="text"
           name="username"
@@ -51,6 +53,7 @@ const Login = () => {
           onChange={(e) => setUsername(e.target.value)}
           required
         />
+
         <input
           type="password"
           name="password"
@@ -60,12 +63,24 @@ const Login = () => {
           onChange={(e) => setPassword(e.target.value)}
           required
         />
+
         <button
           type="submit"
           className="bg-blue-600 text-white px-4 py-2 w-full rounded"
         >
           Sign In
         </button>
+
+        {/* 🆕 Register Link */}
+        <p className="text-sm text-center mt-4">
+          Don't have an account?{" "}
+          <span
+            onClick={() => navigate("/register")}
+            className="text-blue-600 underline cursor-pointer"
+          >
+            Register here
+          </span>
+        </p>
       </form>
     </div>
   );

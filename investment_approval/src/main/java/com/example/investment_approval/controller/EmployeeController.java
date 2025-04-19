@@ -4,6 +4,7 @@ import com.example.investment_approval.entity.Employee;
 import com.example.investment_approval.repository.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.Authentication;
 
 import java.util.List;
 
@@ -50,4 +51,9 @@ public class EmployeeController {
         employeeRepository.deleteById(id);
         return "Employee deleted successfully.";
     }
+    @GetMapping("/me")
+public Employee getCurrentEmployee(Authentication auth) {
+    return employeeRepository.findByUserUsername(auth.getName());
+}
+
 }

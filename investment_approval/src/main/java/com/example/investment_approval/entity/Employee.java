@@ -2,6 +2,8 @@ package com.example.investment_approval.entity;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -75,7 +77,7 @@ public class Employee {
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
-
+@JsonIgnore
     public Employee getManager() {
         return manager;
     }
@@ -83,7 +85,7 @@ public class Employee {
     public void setManager(Employee manager) {
         this.manager = manager;
     }
-
+    @JsonIgnore
     public List<Employee> getSubordinates() {
         return subordinates;
     }
